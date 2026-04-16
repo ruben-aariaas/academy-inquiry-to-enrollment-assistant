@@ -1,0 +1,93 @@
+# Operational Sheet V2 — Academy Inquiry-to-Enrollment Assistant
+
+## Objetivo
+Definir la hoja operativa de la V2 para que una academia pueda usar la salida del sistema como bandeja de entrada, soporte a la respuesta y base de seguimiento.
+
+---
+
+## Nombre de la pestaña
+results_academy_webhook
+
+---
+
+## Columnas
+- run_id
+- fecha_ejecucion
+- fuente
+- modelo_usado
+- version_prompt
+- id
+- nombre
+- email
+- telefono
+- curso_interes
+- edad_alumno
+- mensaje
+- tipo_consulta
+- score_oportunidad
+- prioridad
+- datos_faltantes_text
+- resumen
+- siguiente_accion
+- borrador_respuesta
+- respuesta_lista_para_enviar
+- auto_reply_allowed
+- reply_type
+- send_status
+- estado
+- human_review_required
+- responsable
+- respondido
+- fecha_respuesta
+- fecha_followup
+- resultado_final
+- notas
+
+---
+
+## Uso operativo de los campos clave
+
+### tipo_consulta
+Indica qué quiere el contacto.
+
+### prioridad
+Permite ordenar qué revisar antes.
+
+### datos_faltantes_text
+Permite saber qué falta para avanzar.
+
+### respuesta_lista_para_enviar
+Permite usar una respuesta ya preparada.
+
+### auto_reply_allowed
+Indica si la respuesta es segura para envío.
+
+### send_status
+Indica si está lista para enviar, pendiente de revisión o no aplica.
+
+### estado
+Resume en qué punto está la consulta.
+
+### fecha_followup
+Marca cuándo conviene revisar de nuevo el caso.
+
+---
+
+## Reglas visuales recomendadas
+- prioridad alta = rojo suave
+- prioridad media = amarillo
+- prioridad baja = verde suave
+- auto_reply_allowed true = verde
+- send_status pendiente_revision = naranja
+- estado seguimiento = azul
+- estado revision_humana = naranja/rojo
+- estado descartado = gris
+
+---
+
+## Qué aporta esta hoja
+- ordena la entrada de consultas
+- ayuda a responder más rápido
+- separa lo seguro de lo que requiere revisión
+- deja seguimiento sugerido
+- permite trabajar sin CRM complejo en una primera fase
