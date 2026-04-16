@@ -1,0 +1,400 @@
+# Technical Flow v1 — Academy Inquiry-to-Enrollment Assistant
+
+## Objetivo
+Diseñar la primera versión técnica del sistema para procesar consultas de academia en dos modos:
+
+1. modo evaluación
+2. modo real
+
+La meta es convertir una consulta en una salida estructurada con:
+- tipo_consulta
+- prioridad
+- score_oportunidad
+- datos_faltantes
+- resumen
+- siguiente_accion
+- borrador_respuesta
+- estado
+- human_review_required
+
+---
+
+# 1. Modos del sistema
+
+## Modo evaluación
+Se usa para probar el sistema con un dataset de ejemplo y comparar lo esperado con lo generado.
+
+### Entrada
+Dataset interno o Google Sheets con casos de prueba.
+
+### Objetivo
+- medir comportamiento
+- validar lógica
+- detectar errores
+- mejorar prompts y reglas
+
+---
+
+## Modo real
+Se usa para recibir consultas reales desde un webhook.
+
+### Entrada
+Webhook con payload real.
+
+### Objetivo
+- procesar consultas reales
+- generar una salida operativa
+- dejar trazabilidad
+- preparar respuesta y siguiente acción
+
+---
+
+# 2. Flujo técnico v1 — modo evaluación
+
+## Estructura general
+Manual Trigger → Dataset de prueba → Add Run Metadata → OpenAI Analysis → Parse OpenAI → Merge Original + AI → Evaluate Output → Save Results to Google Sheets
+
+---
+
+## Paso 1 — Manual Trigger
+### Función
+Lanzar el workflow manualmente para pruebas y evaluación.
+
+### Qué aporta
+- control total del flujo
+- facilidad para iterar
+- pruebas repetibles
+
+---
+
+## Paso 2 — Dataset de prueba
+### Función
+Generar o leer las consultas de ejemplo.
+
+### Formato esperado por item
+```json
+{
+  "id": "string",
+  "nombre": "string",
+  "email": "string",
+  "telefono": "string",
+  "curso_interes": "string",
+  "edad_alumno": "string",
+  "mensaje": "string",
+  "tipo_consulta_esperado": "string",
+  "score_esperado": "string",
+  "prioridad_esperada": "string",
+  "datos_faltantes_esperados": ["string"]
+}
+```
+Opciones de implementación
+Code node con dataset embebido
+Google Sheets con dataset_test
+Recomendación v1
+
+Empezar con Code node, porque da velocidad y control.
+
+##Paso 3 — Add Run Metadata
+##Función
+
+Añadir trazabilidad común a cada item.
+
+Campos añadidos
+run_id
+fecha_ejecucion
+fuente = dataset_test
+modelo_usado
+version_prompt
+Objetivo
+diferenciar ejecuciones
+registrar contexto
+comparar versiones
+Paso 4 — OpenAI Analysis
+Función
+
+Analizar la consulta y devolver una salida estructurada.
+
+Input principal
+mensaje
+curso_interes
+edad_alumno
+telefono
+contexto disponible
+Output esperado
+
+{
+  "tipo_consulta": "informacion_general | precios | horarios | disponibilidad | clase_prueba | matricula | seguimiento | soporte_alumno_actual | ruido_o_spam",
+  "prioridad": "alta | media | baja",
+  "score_oportunidad": "alto | medio | bajo",
+  "datos_faltantes": ["string"],
+  "resumen": "string",
+  "siguiente_accion": "string",
+  "borrador_respuesta": "string",
+  "estado": "nuevo | falta_info | listo_para_contactar | seguimiento | descartado | revision_humana",
+  "human_review_required": true
+}
+
+Nota importante
+
+La respuesta debe pedirse en JSON estructurado.
+
+Paso 5 — Parse OpenAI
+Función
+
+Convertir la respuesta de OpenAI en un objeto limpio y usable.
+
+Qué valida
+tipo_consulta válido
+prioridad válida
+score válido
+datos_faltantes en formato lista
+estado válido
+human_review_required booleano
+Qué hace si falla
+usa fallbacks conservadores
+marca estado de parse error si hace falta
+Paso 6 — Merge Original + AI
+Función
+
+Unir:
+
+los datos originales del dataset
+con la salida ya parseada del modelo
+Input 1
+
+Add Run Metadata
+
+Input 2
+
+Parse OpenAI
+
+Modo recomendado
+
+Combine by Position
+
+Resultado
+
+Cada item final contiene:
+
+datos originales
+expected values
+output del sistema
+metadatos
+Paso 7 — Evaluate Output
+Función
+
+Comparar resultado esperado vs resultado generado.
+
+Campos que debe calcular
+acierto_tipo_consulta
+acierto_score
+acierto_prioridad
+acierto_datos_faltantes
+correcto_total
+error_tipo_consulta
+error_score
+error_prioridad
+error_datos_faltantes
+Objetivo
+medir precisión
+detectar errores
+afinar prompts y lógica
+Nota importante
+
+datos_faltantes se compara mejor como conjunto, no como string simple
+
+Paso 8 — Save Results to Google Sheets
+Función
+
+Guardar resultados de evaluación.
+
+Hoja recomendada
+
+results_academy_ai
+
+Columnas recomendadas
+run_id
+fecha_ejecucion
+fuente
+modelo_usado
+version_prompt
+id
+nombre
+email
+telefono
+curso_interes
+edad_alumno
+mensaje
+tipo_consulta_esperado
+score_esperado
+prioridad_esperada
+datos_faltantes_esperados
+tipo_consulta
+score_oportunidad
+prioridad
+datos_faltantes
+resumen
+siguiente_accion
+borrador_respuesta
+estado
+human_review_required
+acierto_tipo_consulta
+acierto_score
+acierto_prioridad
+acierto_datos_faltantes
+correcto_total
+error_tipo_consulta
+error_score
+error_prioridad
+error_datos_faltantes
+3. Flujo técnico v1 — modo real
+Estructura general
+
+Incoming Inquiry Webhook → Normalize Incoming Inquiry → Add Run Metadata → OpenAI Analysis → Parse OpenAI → Merge Original + AI → Save Results to Google Sheets
+
+Paso 1 — Incoming Inquiry Webhook
+Función
+
+Recibir una consulta real.
+
+Método
+
+POST
+
+Payload esperado
+{
+  "nombre": "string",
+  "email": "string",
+  "telefono": "string",
+  "curso_interes": "string",
+  "edad_alumno": "string",
+  "mensaje": "string"
+}
+
+Paso 2 — Normalize Incoming Inquiry
+Función
+
+Asegurar que todos los campos tengan estructura consistente.
+
+Qué hace
+rellena campos vacíos si faltan
+asigna id inicial
+normaliza formato
+define fuente = webhook
+Paso 3 — Add Run Metadata
+Función
+
+Igual que en modo evaluación.
+
+Diferencia
+
+fuente = webhook
+
+Paso 4 — OpenAI Analysis
+Función
+
+Procesar la consulta real y devolver salida estructurada.
+
+Paso 5 — Parse OpenAI
+Función
+
+Validar y limpiar la respuesta del modelo.
+
+Paso 6 — Merge Original + AI
+Función
+
+Unir datos originales con resultado del modelo.
+
+Resultado final por item
+datos del lead/consulta
+metadatos
+clasificación y decisión del sistema
+Paso 7 — Save Results to Google Sheets
+Función
+
+Guardar resultados operativos.
+
+Hoja recomendada
+
+results_academy_webhook
+
+Columnas recomendadas
+run_id
+fecha_ejecucion
+fuente
+modelo_usado
+version_prompt
+id
+nombre
+email
+telefono
+curso_interes
+edad_alumno
+mensaje
+tipo_consulta
+score_oportunidad
+prioridad
+datos_faltantes
+resumen
+siguiente_accion
+borrador_respuesta
+estado
+human_review_required
+4. Nodos o bloques mínimos de la v1
+Modo evaluación
+Manual Trigger
+Dataset de prueba
+Add Run Metadata
+OpenAI Analysis
+Parse OpenAI
+Merge
+Evaluate Output
+Google Sheets
+Modo real
+Webhook
+Normalize Incoming Inquiry
+Add Run Metadata
+OpenAI Analysis
+Parse OpenAI
+Merge
+Google Sheets
+5. Fallos que la arquitectura ya intenta evitar
+1. Inventar precios
+
+No hay confirmación automática de precios si no existe una fuente fiable.
+
+2. Inventar disponibilidad
+
+No se promete agenda si no hay calendario conectado.
+
+3. Ambigüedad de intención
+
+El sistema devuelve human_review_required cuando haga falta.
+
+4. Mezclar pruebas con resultados reales
+
+Se usan hojas distintas para evaluación y webhook.
+
+5. Perder trazabilidad
+
+Cada item lleva run_id, fecha y versión.
+
+6. Qué quedará para v2
+integración con calendario real
+integración con tabla de precios/cursos
+deduplicación
+confidence score
+versionado más formal de prompts
+respuestas semiautomáticas por sector
+seguimiento automatizado
+7. Criterio de construcción
+
+La v1 debe ser:
+
+simple
+útil
+medible
+explicable
+vendible
+
+No debe intentar resolverlo todo a la vez.
