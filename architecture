@@ -1,0 +1,195 @@
+# Academy Inquiry-to-Enrollment Assistant — Architecture
+
+## Objetivo
+Automatizar la primera gestión de consultas comerciales e informativas en una academia para reducir trabajo manual, detectar oportunidades con más intención y acelerar la respuesta.
+
+---
+
+## Problema
+Las academias reciben muchas consultas repetidas o incompletas sobre:
+- horarios
+- precios
+- niveles
+- clases de prueba
+- disponibilidad
+- matrícula
+
+Estas consultas suelen llegar por distintos canales y requieren revisión manual, ida y vuelta para pedir datos y seguimiento posterior.
+
+Eso provoca:
+- tiempo perdido
+- respuestas lentas
+- consultas que se enfrían
+- oportunidades mal priorizadas
+- desorden comercial y operativo
+
+---
+
+## Usuario
+- academia pequeña o mediana
+- centro formativo
+- negocio de clases particulares o grupos
+- equipo administrativo/comercial
+- dueño o coordinador académico
+
+---
+
+## Tipos de consulta que manejará el sistema
+- informacion_general
+- precios
+- horarios
+- disponibilidad
+- clase_prueba
+- matricula
+- seguimiento
+- soporte_alumno_actual
+- ruido_o_spam
+
+---
+
+## Input inicial esperado
+Consulta recibida desde formulario, webhook, email o canal equivalente.
+
+### Payload inicial
+```json
+{
+  "nombre": "string",
+  "email": "string",
+  "telefono": "string",
+  "curso_interes": "string",
+  "edad_alumno": "string",
+  "mensaje": "string"
+}
+```
+Campos internos del sistema
+id
+nombre
+email
+telefono
+curso_interes
+edad_alumno
+mensaje
+run_id
+fecha_ejecucion
+fuente
+modelo_usado
+tipo_consulta
+prioridad
+score_oportunidad
+datos_faltantes
+resumen
+siguiente_accion
+borrador_respuesta
+estado
+human_review_required
+Qué debe detectar el sistema
+
+El sistema debe ser capaz de identificar:
+
+qué quiere la persona
+si es una consulta comercial real o no
+si faltan datos para responder bien
+si conviene responder ya, pedir más información o hacer seguimiento
+si la consulta parece de un alumno actual o de un posible nuevo alumno
+Datos que pueden faltar según tipo de consulta
+Para clase_prueba
+curso_interes
+edad_alumno
+disponibilidad horaria
+modalidad (online/presencial) si aplica
+Para precios
+curso_interes
+frecuencia o tipo de curso
+edad o nivel del alumno si el precio depende de ello
+Para matricula
+curso_interes
+nivel
+edad_alumno
+disponibilidad
+teléfono o vía de contacto rápida
+Para horarios o disponibilidad
+curso_interes
+franja horaria
+modalidad
+nivel si aplica
+
+#Score de oportunidad
+Alto
+intención clara
+consulta concreta
+quiere clase de prueba, matrícula o disponibilidad
+facilita datos útiles
+parece lista para avanzar
+
+Medio
+interés real pero incompleto
+necesita más contexto
+consulta útil pero poco clara
+
+Bajo
+mensaje muy vago
+información insuficiente
+ruido, spam o baja intención
+
+#Prioridad
+alta
+media
+baja
+
+#Regla general
+score alto → prioridad alta
+score medio → prioridad media
+score bajo → prioridad baja
+
+#Siguiente acción sugerida
+responder con información
+pedir datos faltantes
+ofrecer clase de prueba
+proponer horarios disponibles
+derivar a revisión humana
+no priorizar
+
+#Output esperado
+```json
+{
+  "tipo_consulta": "informacion_general | precios | horarios | disponibilidad | clase_prueba | matricula | seguimiento | soporte_alumno_actual | ruido_o_spam",
+  "prioridad": "alta | media | baja",
+  "score_oportunidad": "alto | medio | bajo",
+  "datos_faltantes": ["string"],
+  "resumen": "string",
+  "siguiente_accion": "string",
+  "borrador_respuesta": "string",
+  "estado": "nuevo | falta_info | listo_para_contactar | seguimiento | descartado",
+  "human_review_required": true
+}
+```
+Flujo técnico v1
+Recibir consulta
+Normalizar estructura de entrada
+Añadir metadatos de ejecución
+Analizar la intención del mensaje
+Detectar datos faltantes
+Calcular score de oportunidad
+Asignar prioridad
+Generar resumen
+Proponer siguiente acción
+Generar borrador de respuesta
+Guardar resultado en Google Sheets
+Qué valor aporta al negocio
+menos tiempo respondiendo manualmente
+menos ida y vuelta
+mejor priorización de consultas
+más rapidez para convertir interés en matrícula o clase
+más orden en la entrada comercial
+menos oportunidades perdidas
+Qué no debe hacer la v1
+no confirmar horarios inventados
+no confirmar precios si no vienen de una fuente fiable
+no enviar respuestas automáticas finales sin revisión
+no sustituir a la academia, sino asistirla
+Qué demuestra en portfolio
+automatización orientada a negocio
+integración de IA con lógica operativa
+detección de datos faltantes
+priorización comercial
+diseño de flujos útiles y vendibles
