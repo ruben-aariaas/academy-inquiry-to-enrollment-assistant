@@ -1,0 +1,174 @@
+# Dataset Test — Academy Inquiry-to-Enrollment Assistant
+
+## Columnas
+- id
+- nombre
+- email
+- telefono
+- curso_interes
+- edad_alumno
+- mensaje
+- tipo_consulta_esperado
+- score_esperado
+- prioridad_esperada
+- datos_faltantes_esperados
+
+---
+
+## Casos de prueba
+
+### 1
+- id: 1
+- nombre: Laura Martín
+- email: laura@email.com
+- telefono: 611111111
+- curso_interes: Inglés B1
+- edad_alumno: 16
+- mensaje: Hola, quería saber cuánto cuesta el curso de inglés B1 para mi hijo.
+- tipo_consulta_esperado: precios
+- score_esperado: alto
+- prioridad_esperada: alta
+- datos_faltantes_esperados: []
+
+### 2
+- id: 2
+- nombre: Sergio López
+- email: sergio@email.com
+- telefono: 
+- curso_interes: 
+- edad_alumno: 
+- mensaje: Buenas, me gustaría saber precios.
+- tipo_consulta_esperado: precios
+- score_esperado: medio
+- prioridad_esperada: media
+- datos_faltantes_esperados: ["curso_interes", "edad_alumno"]
+
+### 3
+- id: 3
+- nombre: Ana Ruiz
+- email: ana@email.com
+- telefono: 622222222
+- curso_interes: Matemáticas ESO
+- edad_alumno: 14
+- mensaje: Hola, quería saber si tenéis clases de matemáticas por la tarde para una alumna de 14 años.
+- tipo_consulta_esperado: horarios
+- score_esperado: alto
+- prioridad_esperada: alta
+- datos_faltantes_esperados: []
+
+### 4
+- id: 4
+- nombre: Javier Ortega
+- email: javier@email.com
+- telefono: 
+- curso_interes: Inglés
+- edad_alumno: 
+- mensaje: Tenéis disponibilidad entre semana?
+- tipo_consulta_esperado: disponibilidad
+- score_esperado: medio
+- prioridad_esperada: media
+- datos_faltantes_esperados: ["edad_alumno", "franja_horaria"]
+
+### 5
+- id: 5
+- nombre: Marta Gil
+- email: marta@email.com
+- telefono: 633333333
+- curso_interes: Francés A2
+- edad_alumno: 22
+- mensaje: Me gustaría probar una clase de francés antes de apuntarme. ¿Es posible?
+- tipo_consulta_esperado: clase_prueba
+- score_esperado: alto
+- prioridad_esperada: alta
+- datos_faltantes_esperados: []
+
+### 6
+- id: 6
+- nombre: Pedro Sánchez
+- email: pedro@email.com
+- telefono: 
+- curso_interes: 
+- edad_alumno: 
+- mensaje: Quería información sobre una clase de prueba.
+- tipo_consulta_esperado: clase_prueba
+- score_esperado: medio
+- prioridad_esperada: media
+- datos_faltantes_esperados: ["curso_interes", "edad_alumno"]
+
+### 7
+- id: 7
+- nombre: Cristina Vega
+- email: cristina@email.com
+- telefono: 644444444
+- curso_interes: Refuerzo Bachillerato
+- edad_alumno: 17
+- mensaje: Nos gustaría apuntar a nuestra hija a clases de refuerzo de bachillerato. ¿Cómo sería el proceso de matrícula?
+- tipo_consulta_esperado: matricula
+- score_esperado: alto
+- prioridad_esperada: alta
+- datos_faltantes_esperados: []
+
+### 8
+- id: 8
+- nombre: Raúl Moreno
+- email: raul@email.com
+- telefono: 
+- curso_interes: Inglés
+- edad_alumno: 
+- mensaje: Quiero apuntarme cuanto antes.
+- tipo_consulta_esperado: matricula
+- score_esperado: medio
+- prioridad_esperada: media
+- datos_faltantes_esperados: ["curso_interes", "edad_alumno", "telefono"]
+
+### 9
+- id: 9
+- nombre: Elena Navarro
+- email: elena@email.com
+- telefono: 655555555
+- curso_interes: Inglés niños
+- edad_alumno: 9
+- mensaje: Os escribí hace dos días para preguntar por clases de inglés para mi hijo y quería saber si hay novedades.
+- tipo_consulta_esperado: seguimiento
+- score_esperado: medio
+- prioridad_esperada: baja
+- datos_faltantes_esperados: []
+
+### 10
+- id: 10
+- nombre: Diego Romero
+- email: diego@email.com
+- telefono: 
+- curso_interes: Robótica
+- edad_alumno: 11
+- mensaje: Hola, hice una consulta la semana pasada y aún no me habéis respondido.
+- tipo_consulta_esperado: seguimiento
+- score_esperado: medio
+- prioridad_esperada: baja
+- datos_faltantes_esperados: []
+
+### 11
+- id: 11
+- nombre: Paula Torres
+- email: paula@email.com
+- telefono: 666666666
+- curso_interes: 
+- edad_alumno: 
+- mensaje: Soy alumna actual y no puedo acceder al aula virtual desde ayer.
+- tipo_consulta_esperado: soporte_alumno_actual
+- score_esperado: bajo
+- prioridad_esperada: media
+- datos_faltantes_esperados: []
+
+### 12
+- id: 12
+- nombre: Cursos Premium
+- email: promo@spam.com
+- telefono: 
+- curso_interes: 
+- edad_alumno: 
+- mensaje: Multiplica las matrículas de tu academia con nuestro servicio SEO garantizado.
+- tipo_consulta_esperado: ruido_o_spam
+- score_esperado: bajo
+- prioridad_esperada: baja
+- datos_faltantes_esperados: []
