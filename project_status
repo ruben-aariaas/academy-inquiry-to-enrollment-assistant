@@ -1,0 +1,52 @@
+# Project Status — Academy Inquiry-to-Enrollment Assistant
+
+## Estado actual
+Proyecto en fase de diseño funcional y técnico.
+
+---
+
+## Ya definido
+- problema de negocio
+- vertical objetivo
+- tipos de consulta
+- dataset de prueba
+- outputs del sistema
+- lógica funcional
+- arquitectura técnica v1
+- modo evaluación
+- modo real
+
+---
+
+## Pendiente de construir
+- dataset en nodo Code o Google Sheets
+- Add Run Metadata
+- OpenAI Analysis
+- Parse OpenAI
+- Merge Original + AI
+- Evaluate Output
+- Save Results to Google Sheets
+- Webhook real
+
+---
+
+## Orden recomendado de implementación
+1. modo evaluación
+2. validación de outputs
+3. guardado en Google Sheets
+4. modo real con webhook
+5. refinado de prompts
+6. mejoras de negocio
+
+---
+
+## Riesgos controlados
+- no inventar precios
+- no inventar disponibilidad
+- usar human_review_required
+- separar evaluación de operación real
+
+---
+
+## Próximo paso
+Implementar el flujo técnico v1 empezando por el modo evaluación.
