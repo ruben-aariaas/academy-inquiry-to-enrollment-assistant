@@ -1,0 +1,159 @@
+# Commercial Demo V2 — Academy Inquiry-to-Enrollment Assistant
+
+## Qué es
+Academy Inquiry-to-Enrollment Assistant es un asistente de primera atención para academias.
+
+Recibe una consulta, entiende qué quiere la persona, detecta qué falta, prioriza la oportunidad, prepara una respuesta y decide si esa respuesta se puede enviar de forma segura o si necesita revisión.
+
+---
+
+## Problema que resuelve
+Muchas academias reciben consultas por distintos canales y las gestionan de forma manual.
+
+Eso provoca:
+- tiempo perdido leyendo y clasificando mensajes
+- respuestas lentas
+- solicitudes incompletas
+- poco seguimiento
+- mezcla entre comercial, soporte y ruido
+- oportunidades que se enfrían
+
+---
+
+## Qué hace el sistema
+El sistema:
+- recibe la consulta
+- clasifica el tipo de consulta
+- asigna prioridad
+- detecta datos faltantes
+- genera una respuesta sugerida
+- decide si esa respuesta se puede enviar
+- deja seguimiento recomendado
+- guarda todo en una hoja operativa simple
+
+---
+
+## Qué no hace
+Esta V2:
+- no inventa precios
+- no inventa disponibilidad
+- no confirma plazas
+- no cierra matrículas automáticamente
+- no sustituye a una persona
+
+Automatiza la primera atención segura, no toda la operación.
+
+---
+
+## Cómo se enseña en demo
+
+### Paso 1
+Mostrar el problema:
+consultas desordenadas, respuestas lentas y seguimiento pobre.
+
+### Paso 2
+Enviar una consulta real por webhook.
+
+### Paso 3
+Mostrar cómo el sistema:
+- entiende el caso
+- decide prioridad
+- genera respuesta
+- marca si se puede enviar
+
+### Paso 4
+Mostrar la pestaña `academy_operativa` y explicar cómo la usaría la academia.
+
+---
+
+## Casos demo recomendados
+
+### Caso 1 — precios
+Mensaje:
+“Hola, quería saber cuánto cuesta el curso de inglés B1 para mi hijo.”
+
+Qué demuestra:
+- entiende que es una consulta de precios
+- no responde automáticamente con información inventada
+- prepara una respuesta segura
+- marca revisión humana
+
+### Caso 2 — clase de prueba
+Mensaje:
+“Me gustaría probar una clase de francés antes de apuntarme. ¿Es posible?”
+
+Qué demuestra:
+- detecta intención clara
+- genera respuesta útil
+- permite respuesta segura
+- deja el caso listo para avanzar
+
+### Caso 3 — matrícula incompleta
+Mensaje:
+“Quiero apuntarme cuanto antes.”
+
+Qué demuestra:
+- detecta intención de matrícula
+- pide solo los datos necesarios
+- propone seguimiento
+- deja respuesta lista para enviar
+
+### Caso 4 — seguimiento
+Mensaje:
+“Os escribí hace dos días y quería saber si hay novedades.”
+
+Qué demuestra:
+- distingue seguimiento de comercial nuevo
+- prioriza bien
+- deja respuesta simple y seguimiento
+
+### Caso 5 — soporte alumno actual
+Mensaje:
+“No puedo acceder al aula virtual desde ayer.”
+
+Qué demuestra:
+- distingue soporte de oportunidad comercial
+- no automatiza una respuesta sensible
+- deriva a revisión humana
+
+---
+
+## Guion corto de 30 segundos
+“Este sistema ayuda a una academia a gestionar mejor sus primeras consultas. Recibe el mensaje, entiende qué quiere la persona, detecta si faltan datos, prioriza el caso y deja una respuesta sugerida. Además decide si esa respuesta es segura para enviar o si necesita revisión humana. Así se responde antes, con más orden y sin inventar información sensible.”
+
+---
+
+## Guion de demo de 2 minutos
+“Muchas academias reciben consultas de precios, clases de prueba, matrículas, seguimientos o incidencias, y lo gestionan todo a mano. Aquí lo que hago es automatizar la primera atención.
+
+Voy a enviar una consulta real al sistema. El workflow la recibe, la normaliza, la analiza con IA y aplica reglas de negocio. Después deja el resultado en una hoja operativa.
+
+Aquí podemos ver quién escribió, qué tipo de consulta es, la prioridad, qué información falta, la respuesta sugerida y si esa respuesta se puede enviar o necesita revisión.
+
+Por ejemplo, una consulta de precios no se responde automáticamente con un precio inventado: el sistema la marca para revisión humana y deja una respuesta segura. En cambio, una clase de prueba o una matrícula incompleta sí pueden recibir una primera respuesta automática para no perder tiempo.
+
+La ventaja es que la academia responde antes, ordena mejor la entrada y no depende de revisar todo manualmente desde cero.”
+
+---
+
+## Frases de valor para venderlo
+- Responde antes sin inventar información sensible
+- Convierte consultas desordenadas en acciones claras
+- Reduce trabajo manual en la primera atención
+- Ayuda a no perder oportunidades por lentitud
+- Se puede usar sin cambiar todo el sistema del negocio
+- Deja una hoja operativa simple y utilizable desde el primer día
+
+---
+
+## Cómo posicionarlo
+No venderlo como chatbot.
+No venderlo como simple clasificador.
+
+Venderlo como:
+“asistente de primera atención comercial y operativa para academias”.
+
+---
+
+## Cierre comercial sugerido
+“La primera versión no sustituye al equipo, pero sí le quita la parte repetitiva: leer, clasificar, pedir datos y preparar la respuesta inicial. Eso ya permite responder antes y con más orden sin cambiar por completo la operativa de la academia.”
