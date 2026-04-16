@@ -1,0 +1,257 @@
+# System Logic V2 — Academy Inquiry-to-Enrollment Assistant
+
+## Objetivo de la V2
+Ampliar el sistema para que no solo organice consultas y genere un borrador, sino que también decida si la respuesta es segura para enviar y deje preparado un seguimiento básico.
+
+---
+
+## Qué añade la V2
+La V2 introduce cinco campos nuevos:
+
+- auto_reply_allowed
+- reply_type
+- respuesta_lista_para_enviar
+- send_status
+- fecha_followup
+
+---
+
+## 1. auto_reply_allowed
+
+### Tipo
+boolean
+
+### Significado
+Indica si la respuesta generada es suficientemente segura como para poder enviarse sin revisión manual.
+
+### Valores
+- true
+- false
+
+### Regla general
+Usar `true` cuando la respuesta:
+- no confirme precios exactos
+- no confirme disponibilidad real
+- no cierre matrículas
+- no implique riesgo operativo
+- solo confirme recepción, pida datos o proponga el siguiente paso
+
+Usar `false` cuando la respuesta:
+- implique precios
+- implique disponibilidad real
+- implique soporte sensible
+- requiera validación humana
+- pueda causar error si se envía automáticamente
+
+---
+
+## 2. reply_type
+
+### Tipo
+string
+
+### Valores permitidos
+- pedir_datos
+- confirmar_recepcion
+- seguimiento_simple
+- revision_humana
+- ofrecer_clase_prueba
+- responder_informacion_general
+
+### Significado
+Describe el tipo de respuesta que el sistema ha preparado.
+
+### Reglas orientativas
+- `pedir_datos` → cuando faltan datos importantes
+- `confirmar_recepcion` → cuando solo conviene confirmar que la consulta ha sido recibida
+- `seguimiento_simple` → cuando se responde a un seguimiento sin resolver nada crítico
+- `revision_humana` → cuando la respuesta no debe enviarse sin revisión
+- `ofrecer_clase_prueba` → cuando la consulta va orientada a probar antes de matricularse
+- `responder_informacion_general` → cuando se puede contestar de forma general sin riesgo
+
+---
+
+## 3. respuesta_lista_para_enviar
+
+### Tipo
+string
+
+### Significado
+Texto final, limpio y utilizable para enviar o revisar.
+
+### Regla general
+Debe ser:
+- corto
+- claro
+- profesional
+- sin inventar datos
+- orientado a mover la consulta al siguiente paso
+
+### Casos permitidos
+#### Seguro para enviar
+- pedir curso o edad
+- pedir disponibilidad
+- confirmar recepción
+- ofrecer clase de prueba sin cerrar fecha real
+- responder seguimiento simple
+
+#### No seguro para enviar automáticamente
+- dar precio exacto
+- confirmar plaza
+- confirmar matrícula
+- resolver incidencias delicadas
+- dar horarios cerrados sin agenda conectada
+
+---
+
+## 4. send_status
+
+### Tipo
+string
+
+### Valores permitidos
+- listo_para_enviar
+- pendiente_revision
+- no_aplica
+
+### Regla general
+- `listo_para_enviar` → si `auto_reply_allowed = true`
+- `pendiente_revision` → si `auto_reply_allowed = false`
+- `no_aplica` → para spam o casos donde no tenga sentido preparar envío
+
+---
+
+## 5. fecha_followup
+
+### Tipo
+string o vacío
+
+### Formato recomendado
+ISO 8601 o fecha simple según cómo se guarde en el sheet
+
+### Regla general
+Sirve para sugerir cuándo revisar de nuevo la consulta.
+
+### Reglas sugeridas
+- si `estado = falta_info` → follow-up en 2 días
+- si `estado = seguimiento` → follow-up en 1 día
+- si `estado = revision_humana` → follow-up hoy
+- si `estado = descartado` → vacío
+- si `estado = listo_para_contactar` → vacío o mismo día según criterio
+
+---
+
+## Política de respuesta segura
+
+### Casos en los que sí puede responder automáticamente
+- pedir datos faltantes
+- confirmar recepción de la consulta
+- responder seguimiento simple
+- ofrecer clase de prueba sin comprometer plaza ni fecha real
+- responder información general no sensible
+
+### Casos en los que no debe responder automáticamente
+- consultas de precios exactos
+- disponibilidad real o plazas
+- matrícula cerrada
+- soporte de alumno actual
+- consultas ambiguas
+- cualquier caso donde haya riesgo de dar información incorrecta
+
+---
+
+## Relación entre campos operativos
+
+### Si auto_reply_allowed = true
+Entonces normalmente:
+- `send_status = listo_para_enviar`
+- `respuesta_lista_para_enviar` debe estar completa
+- `human_review_required` puede ser false en casos seguros
+
+### Si auto_reply_allowed = false
+Entonces normalmente:
+- `send_status = pendiente_revision`
+- `reply_type = revision_humana`
+- `human_review_required = true`
+
+---
+
+## Ejemplos de comportamiento esperado
+
+### Caso 1 — precios
+Consulta:
+“Hola, quería saber cuánto cuesta el curso de inglés B1 para mi hijo.”
+
+Salida esperada:
+- tipo_consulta = precios
+- auto_reply_allowed = false
+- reply_type = revision_humana
+- respuesta_lista_para_enviar = mensaje seguro de revisión
+- send_status = pendiente_revision
+
+### Caso 2 — clase de prueba
+Consulta:
+“Me gustaría probar una clase de francés antes de apuntarme.”
+
+Salida esperada:
+- tipo_consulta = clase_prueba
+- auto_reply_allowed = true
+- reply_type = ofrecer_clase_prueba
+- respuesta_lista_para_enviar = respuesta segura pidiendo disponibilidad si hace falta
+- send_status = listo_para_enviar
+
+### Caso 3 — matrícula incompleta
+Consulta:
+“Quiero apuntarme cuanto antes.”
+
+Salida esperada:
+- tipo_consulta = matricula
+- auto_reply_allowed = true
+- reply_type = pedir_datos
+- respuesta_lista_para_enviar = petición de edad del alumno y/o datos clave
+- send_status = listo_para_enviar
+- fecha_followup = +2 días
+
+### Caso 4 — seguimiento
+Consulta:
+“Os escribí hace dos días y quería saber si hay novedades.”
+
+Salida esperada:
+- tipo_consulta = seguimiento
+- auto_reply_allowed = true
+- reply_type = seguimiento_simple
+- respuesta_lista_para_enviar = respuesta breve de seguimiento
+- send_status = listo_para_enviar
+- fecha_followup = +1 día
+
+### Caso 5 — soporte alumno actual
+Consulta:
+“No puedo acceder al aula virtual desde ayer.”
+
+Salida esperada:
+- tipo_consulta = soporte_alumno_actual
+- auto_reply_allowed = false
+- reply_type = revision_humana
+- respuesta_lista_para_enviar = mensaje seguro de revisión
+- send_status = pendiente_revision
+- fecha_followup = hoy
+
+---
+
+## Qué mejora esta V2
+La V2 convierte el sistema en algo más útil para una academia porque:
+- no solo ordena la consulta
+- también decide si puede responder
+- deja la respuesta lista
+- y marca cuándo revisar la consulta si no se resuelve
+
+---
+
+## Qué sigue sin hacer la V2
+- no usa agenda real
+- no usa precios reales
+- no confirma plazas
+- no cierra matrículas
+- no sustituye por completo a una persona
+
+La V2 automatiza la primera atención segura, no toda la operación.
