@@ -1,0 +1,361 @@
+# System Logic — Academy Inquiry-to-Enrollment Assistant
+
+## Objetivo
+Definir la lógica funcional del sistema para procesar consultas de academia, detectar intención, priorizar oportunidades, identificar datos faltantes y proponer una respuesta útil.
+
+---
+
+## Outputs principales del sistema
+
+Cada consulta procesada debe generar estos campos:
+
+- tipo_consulta
+- prioridad
+- score_oportunidad
+- datos_faltantes
+- resumen
+- siguiente_accion
+- borrador_respuesta
+- estado
+- human_review_required
+
+---
+
+## 1. tipo_consulta
+
+### Valores permitidos
+- informacion_general
+- precios
+- horarios
+- disponibilidad
+- clase_prueba
+- matricula
+- seguimiento
+- soporte_alumno_actual
+- ruido_o_spam
+
+### Regla general
+El sistema debe identificar la intención principal del mensaje.
+
+### Criterios orientativos
+
+#### informacion_general
+Consultas abiertas o introductorias sin foco claro.
+Ejemplos:
+- “Quiero información”
+- “Me gustaría saber más sobre vuestra academia”
+
+#### precios
+Consultas centradas en coste, tarifas o mensualidades.
+Ejemplos:
+- “¿Cuánto cuesta?”
+- “¿Qué precio tiene el curso?”
+
+#### horarios
+Consultas centradas en franjas, días o turnos.
+Ejemplos:
+- “¿Tenéis clases por la tarde?”
+- “¿Qué horarios hay?”
+
+#### disponibilidad
+Consultas sobre plazas o huecos disponibles.
+Ejemplos:
+- “¿Quedan plazas?”
+- “¿Tenéis disponibilidad para este mes?”
+
+#### clase_prueba
+Mensajes donde se pide probar antes de matricularse.
+Ejemplos:
+- “¿Puedo ir a una clase de prueba?”
+- “Quisiera probar una clase”
+
+#### matricula
+Mensajes con intención clara de apuntarse o iniciar proceso.
+Ejemplos:
+- “Quiero apuntarme”
+- “¿Cómo hago la matrícula?”
+
+#### seguimiento
+Mensajes que retoman una consulta previa.
+Ejemplos:
+- “Os escribí hace unos días”
+- “Sigo pendiente de respuesta”
+
+#### soporte_alumno_actual
+Mensajes de alguien que ya es alumno y tiene una incidencia o necesidad operativa.
+Ejemplos:
+- “No puedo entrar al aula virtual”
+- “No me llega el enlace de clase”
+
+#### ruido_o_spam
+Mensajes irrelevantes o promocionales no solicitados.
+Ejemplos:
+- “Multiplica tus matrículas con SEO”
+- “Servicio de marketing para academias”
+
+---
+
+## 2. score_oportunidad
+
+### Valores permitidos
+- alto
+- medio
+- bajo
+
+### Objetivo
+Medir el potencial real de la consulta para avanzar hacia matrícula, clase de prueba o contacto útil.
+
+### Score alto
+Asignar score alto cuando:
+- la intención es clara
+- la consulta es concreta
+- la persona quiere apuntarse, probar una clase o saber disponibilidad real
+- aporta datos suficientes
+- parece lista para avanzar
+
+### Score medio
+Asignar score medio cuando:
+- hay interés real
+- pero faltan datos importantes
+- o el mensaje es útil pero todavía poco accionable
+
+### Score bajo
+Asignar score bajo cuando:
+- el mensaje es muy vago
+- no hay intención clara
+- parece ruido
+- es spam
+- o es una incidencia de alumno actual que no es oportunidad comercial
+
+---
+
+## 3. prioridad
+
+### Valores permitidos
+- alta
+- media
+- baja
+
+### Regla general
+La prioridad representa la urgencia operativa o comercial de la consulta.
+
+### Prioridad alta
+- intención clara de matrícula
+- solicitud de clase de prueba
+- disponibilidad o plaza con intención fuerte
+- consulta comercial bien definida y accionable
+
+### Prioridad media
+- interés real pero incompleto
+- consulta de precios o información con contexto parcial
+- soporte de alumno actual no crítico
+
+### Prioridad baja
+- seguimiento normal
+- mensajes vagos
+- spam
+- ruido
+- información poco concreta sin urgencia
+
+---
+
+## 4. datos_faltantes
+
+### Objetivo
+Detectar qué información falta para responder bien o avanzar.
+
+### Formato esperado
+Lista de strings.
+
+Ejemplo:
+```json
+["curso_interes", "edad_alumno", "franja_horaria"]
+```
+###Posibles campos faltantes
+curso_interes
+edad_alumno
+telefono
+franja_horaria
+modalidad
+nivel
+disponibilidad
+tipo_curso
+
+###Reglas por tipo de consulta
+precios
+Suelen faltar:
+curso_interes
+edad_alumno
+nivel
+modalidad
+
+horarios
+Suelen faltar:
+curso_interes
+edad_alumno
+franja_horaria
+modalidad
+
+disponibilidad
+Suelen faltar:
+curso_interes
+edad_alumno
+franja_horaria
+
+clase_prueba
+Suelen faltar:
+curso_interes
+edad_alumno
+disponibilidad
+telefono
+
+matricula
+Suelen faltar:
+curso_interes
+edad_alumno
+telefono
+nivel
+disponibilidad
+
+seguimiento
+Normalmente no faltan datos si el contexto ya existe, pero puede faltar:
+referencia previa
+curso_interes
+
+soporte_alumno_actual
+Puede faltar:
+curso_interes
+identificación mínima del alumno
+detalle de la incidencia
+
+##5. resumen
+###Objetivo
+Generar una frase breve, clara y útil sobre la consulta.
+
+Regla
+Debe servir para que una persona del negocio entienda en segundos:
+qué quiere el usuario
+qué contexto hay
+si parece relevante
+Ejemplos
+“Consulta sobre precio de curso de inglés B1 para alumno de 16 años.”
+“Interés en clase de prueba de francés A2 para adulta.”
+“Mensaje de seguimiento sobre consulta previa de clases para niño.”
+“Incidencia de alumna actual con acceso al aula virtual.”
+
+##6. siguiente_accion
+Objetivo
+
+Indicar qué debería hacerse a continuación.
+
+Valores orientativos
+responder_con_informacion
+pedir_datos_faltantes
+ofrecer_clase_prueba
+proponer_horarios
+derivar_a_revision_humana
+marcar_como_baja_prioridad
+no_priorizar
+Reglas generales
+Si score es alto y faltan pocos o ningún dato
+responder_con_informacion
+ofrecer_clase_prueba
+proponer_horarios
+Si score es medio y faltan datos clave
+pedir_datos_faltantes
+Si es seguimiento
+responder_con_informacion
+derivar_a_revision_humana si hay contexto previo que el sistema no tiene
+Si es soporte_alumno_actual
+derivar_a_revision_humana
+Si es ruido_o_spam
+no_priorizar
+
+##7. borrador_respuesta
+Objetivo
+Generar una respuesta útil, breve y profesional lista para revisar.
+
+Regla general
+
+No debe prometer:
+
+horarios reales si no hay calendario conectado
+precios exactos si no hay fuente fiable
+matrículas cerradas automáticamente
+Estilo
+claro
+amable
+útil
+corto
+orientado a avanzar
+Ejemplos
+Caso precios con datos suficientes
+
+“Gracias por tu mensaje. Te podemos ampliar información sobre el curso de Inglés B1 para un alumno de 16 años. Si quieres, te explicamos opciones, horarios y precio disponible para ese curso.”
+
+Caso con datos faltantes
+
+“Gracias por escribirnos. Para poder orientarte mejor, ¿podrías indicarnos qué curso te interesa y la edad del alumno? Con eso te respondemos con más detalle.”
+
+Caso clase_prueba
+
+“Gracias por tu interés. Sí, podemos valorar una clase de prueba. Para organizarla mejor, necesitamos confirmar el curso que te interesa, la edad del alumno y tu disponibilidad.”
+
+Caso spam
+
+No hace falta generar un borrador útil. Puede quedar vacío o marcar revisión baja.
+
+##8. estado
+Valores permitidos
+nuevo
+falta_info
+listo_para_contactar
+seguimiento
+descartado
+revision_humana
+Reglas generales
+nuevo: consulta recién recibida
+falta_info: faltan datos clave para responder bien
+listo_para_contactar: se puede responder ya
+seguimiento: consulta de seguimiento
+descartado: ruido o spam
+revision_humana: necesita intervención directa del negocio
+
+##9. human_review_required
+Valores
+true
+false
+Cuándo usar true
+cuando falten datos importantes
+cuando la intención sea ambigua
+cuando sea soporte de alumno actual
+cuando el sistema no deba inventar precio ni disponibilidad
+cuando el mensaje pueda tener implicaciones operativas sensibles
+Cuándo usar false
+cuando la consulta esté clara
+cuando el borrador sea seguro
+cuando la siguiente acción sea obvia y de bajo riesgo
+
+##10. Reglas de seguridad y fiabilidad
+El sistema no debe:
+inventar horarios
+inventar plazas
+inventar precios
+confirmar matrícula final automáticamente
+asumir disponibilidad sin fuente conectada
+responder de forma agresiva o demasiado larga
+El sistema sí debe:
+pedir datos faltantes
+priorizar consultas útiles
+resumir bien
+dejar claro el siguiente paso
+marcar revisión humana cuando haya dudas
+
+##11. Qué haría que este sistema fuese fuerte de verdad
+intención bien detectada
+datos faltantes útiles
+siguiente acción clara
+borrador de respuesta usable
+criterios de seguridad
+trazabilidad
+capacidad de adaptarse a una academia real
